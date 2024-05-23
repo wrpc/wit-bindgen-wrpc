@@ -39,7 +39,7 @@ async fn go_bindgen() -> anyhow::Result<()> {
     ensure!(status.success(), "`go test` failed");
 
     with_nats(|port, nats_client| async move {
-        wrpc::generate!({
+        wit_bindgen_wrpc::generate!({
             world: "sync-client",
             path: "tests/wit",
             additional_derives: [PartialEq],
@@ -60,7 +60,7 @@ async fn go_bindgen() -> anyhow::Result<()> {
             .spawn()
             .context("failed to run `sync-server-nats`")?;
 
-        let client = wrpc::transport::nats::Client::new(nats_client, "go".to_string());
+        let client = wrpc_transport_nats::Client::new(nats_client, "go".to_string());
 
         // TODO: Remove the need for this
         sleep(Duration::from_secs(1)).await;
@@ -209,19 +209,4 @@ async fn go_bindgen() -> anyhow::Result<()> {
         Ok(())
     })
     .await
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn go() -> anyhow::Result<()> {
-    init().await;
-
-    let status = Command::new("go")
-        .current_dir("go")
-        .args(["test", "-v", "./..."])
-        .kill_on_drop(true)
-        .status()
-        .await
-        .context("failed to call `go test`")?;
-    ensure!(status.success(), "`go test` failed");
-    Ok(())
 }

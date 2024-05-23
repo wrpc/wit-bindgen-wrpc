@@ -10,9 +10,9 @@ import (
 	"os"
 
 	"github.com/nats-io/nats.go"
-	wasitypes "github.com/wrpc/wrpc/examples/go/http-outgoing-client/bindings/wasi/http/types"
-	outgoing_handler "github.com/wrpc/wrpc/examples/go/http-outgoing-client/bindings/wrpc/http/outgoing_handler"
-	wrpctypes "github.com/wrpc/wrpc/examples/go/http-outgoing-client/bindings/wrpc/http/types"
+	wasitypes "github.com/wrpc/wit-bindgen-wrpc/examples/go/http-outgoing-client/bindings/wasi/http/types"
+	outgoing_handler "github.com/wrpc/wit-bindgen-wrpc/examples/go/http-outgoing-client/bindings/wrpc/http/outgoing_handler"
+	wrpctypes "github.com/wrpc/wit-bindgen-wrpc/examples/go/http-outgoing-client/bindings/wrpc/http/types"
 	wrpc "github.com/wrpc/wrpc/go"
 	wrpcnats "github.com/wrpc/wrpc/go/nats"
 )

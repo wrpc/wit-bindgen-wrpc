@@ -11,8 +11,8 @@ import (
 	"syscall"
 
 	"github.com/nats-io/nats.go"
-	server "github.com/wrpc/wrpc/examples/go/keyvalue-server/bindings"
-	"github.com/wrpc/wrpc/examples/go/keyvalue-server/bindings/exports/wrpc/keyvalue/store"
+	server "github.com/wrpc/wit-bindgen-wrpc/examples/go/keyvalue-server/bindings"
+	"github.com/wrpc/wit-bindgen-wrpc/examples/go/keyvalue-server/bindings/exports/wrpc/keyvalue/store"
 	wrpc "github.com/wrpc/wrpc/go"
 	wrpcnats "github.com/wrpc/wrpc/go/nats"
 )

@@ -10,8 +10,8 @@ import (
 
 	"github.com/nats-io/nats.go"
 	wrpcnats "github.com/wrpc/wrpc/go/nats"
-	integration "github.com/wrpc/wrpc/tests/go"
-	"github.com/wrpc/wrpc/tests/go/bindings/sync_server"
+	integration "github.com/wrpc/wit-bindgen-wrpc/tests/go"
+	"github.com/wrpc/wit-bindgen-wrpc/tests/go/bindings/sync_server"
 )
 
 func run(url string) error {

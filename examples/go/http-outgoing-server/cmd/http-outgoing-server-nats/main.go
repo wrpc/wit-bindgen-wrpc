@@ -14,9 +14,9 @@ import (
 	"syscall"
 
 	"github.com/nats-io/nats.go"
-	server "github.com/wrpc/wrpc/examples/go/http-outgoing-server/bindings"
-	wasitypes "github.com/wrpc/wrpc/examples/go/http-outgoing-server/bindings/wasi/http/types"
-	wrpctypes "github.com/wrpc/wrpc/examples/go/http-outgoing-server/bindings/wrpc/http/types"
+	server "github.com/wrpc/wit-bindgen-wrpc/examples/go/http-outgoing-server/bindings"
+	wasitypes "github.com/wrpc/wit-bindgen-wrpc/examples/go/http-outgoing-server/bindings/wasi/http/types"
+	wrpctypes "github.com/wrpc/wit-bindgen-wrpc/examples/go/http-outgoing-server/bindings/wrpc/http/types"
 	wrpc "github.com/wrpc/wrpc/go"
 	wrpcnats "github.com/wrpc/wrpc/go/nats"
 )

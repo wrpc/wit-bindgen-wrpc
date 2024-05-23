@@ -7,18 +7,6 @@ on:
     branches:
       - main
     tags:
-      - 'interface-blobstore-v[0-9].[0-9]+.[0-9]+'
-      - 'interface-blobstore-v[0-9].[0-9]+.[0-9]+-*'
-      - 'interface-http-v[0-9].[0-9]+.[0-9]+'
-      - 'interface-http-v[0-9].[0-9]+.[0-9]+-*'
-      - 'runtime-wasmtime-v[0-9].[0-9]+.[0-9]+'
-      - 'runtime-wasmtime-v[0-9].[0-9]+.[0-9]+-*'
-      - 'transport-nats-v[0-9].[0-9]+.[0-9]+'
-      - 'transport-nats-v[0-9].[0-9]+.[0-9]+-*'
-      - 'transport-v[0-9].[0-9]+.[0-9]+'
-      - 'transport-v[0-9].[0-9]+.[0-9]+-*'
-      - 'types-v[0-9].[0-9]+.[0-9]+'
-      - 'types-v[0-9].[0-9]+.[0-9]+-*'
       - 'v[0-9].[0-9]+.[0-9]+'
       - 'v[0-9].[0-9]+.[0-9]+-*'
   workflow_dispatch:
@@ -49,7 +37,7 @@ jobs:
 
           - target: riscv64gc-unknown-linux-gnu-fhs
             test-bin: |
-              nix build -L '.#wrpc-riscv64gc-unknown-linux-gnu'
+              nix build -L '.#wit-bindgen-wrpc-riscv64gc-unknown-linux-gnu'
               nix shell --inputs-from . 'nixpkgs#qemu' -c qemu-riscv64 ./result/bin/wit-bindgen-wrpc --version
 
           - target: x86_64-apple-darwin
@@ -67,9 +55,9 @@ jobs:
             test-bin: ./result/bin/wit-bindgen-wrpc --version
             test-oci: |
               docker load < ./result
-              docker run --rm wrpc:$(nix eval --raw .#wrpc-x86_64-unknown-linux-musl-oci.imageTag) wit-bindgen-wrpc --version
+              docker run --rm wit-bindgen-wrpc:$(nix eval --raw .#wit-bindgen-wrpc-x86_64-unknown-linux-musl-oci.imageTag) wit-bindgen-wrpc --version
 
-    name: wrpc-${{ matrix.config.target }}
+    name: wit-bindgen-wrpc-${{ matrix.config.target }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.6
@@ -78,27 +66,27 @@ jobs:
           cachixAuthToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - uses: ./.github/actions/build-nix
         with:
-          package: wrpc-${{ matrix.config.target }}
+          package: wit-bindgen-wrpc-${{ matrix.config.target }}
       - run: ${{ matrix.config.test-bin }}
       - uses: ./.github/actions/build-nix
         if: ${{ !endsWith(matrix.config.target, 'fhs') }}
         with:
-          package: wrpc-${{ matrix.config.target }}-oci
+          package: wit-bindgen-wrpc-${{ matrix.config.target }}-oci
       - run: ${{ matrix.config.test-oci }}
         if: ${{ !endsWith(matrix.config.target, 'fhs') }}
 
   build-lipo:
-    name: wrpc-universal-darwin
+    name: wit-bindgen-wrpc-universal-darwin
     needs: build-bin
     runs-on: macos-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wrpc-aarch64-apple-darwin
+          name: wit-bindgen-wrpc-aarch64-apple-darwin
           path: aarch64
       - uses: actions/download-artifact@v4
         with:
-          name: wrpc-x86_64-apple-darwin
+          name: wit-bindgen-wrpc-x86_64-apple-darwin
           path: x86_64
 
       - run: chmod +x ./x86_64/bin/*
@@ -112,7 +100,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4.3.3
         with:
-          name: wrpc-universal-darwin
+          name: wit-bindgen-wrpc-universal-darwin
           path: artifact
 
   test-linux:
@@ -121,7 +109,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wrpc-x86_64-unknown-linux-musl
+          name: wit-bindgen-wrpc-x86_64-unknown-linux-musl
       - run: chmod +x ./bin/wit-bindgen-wrpc
       - run: ./bin/wit-bindgen-wrpc --version
 
@@ -131,7 +119,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wrpc-x86_64-pc-windows-gnu
+          name: wit-bindgen-wrpc-x86_64-pc-windows-gnu
       - run: .\bin\wit-bindgen-wrpc.exe --version
 
   cargo:
@@ -234,35 +222,35 @@ jobs:
         run: nix profile install --inputs-from . 'nixpkgs#buildah'
 
       - name: Build `wrpc` image
-        run: nix run -L .#build-wrpc-oci wrpc
+        run: nix run -L .#build-wit-bindgen-wrpc-oci wrpc
 
       - name: Test `wrpc` image
         run: |
-          buildah push wrpc:$(nix eval --raw .#wrpc-x86_64-unknown-linux-musl-oci.imageTag) docker-daemon:wrpc:test
-          docker run --rm wrpc:test wit-bindgen-wrpc --version
+          buildah push wit-bindgen-wrpc:$(nix eval --raw .#wit-bindgen-wrpc-x86_64-unknown-linux-musl-oci.imageTag) docker-daemon:wit-bindgen-wrpc:test
+          docker run --rm wit-bindgen-wrpc:test wit-bindgen-wrpc --version
 
       - name: Push `wrpc` commit rev tag
         if: startswith(github.ref, format('refs/tags/{0}v', matrix.prefix)) || github.ref == 'refs/heads/main'
         run: |
-          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:${{ github.sha }}
-          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:${{ steps.ctx.outputs.sha_short }}
+          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:${{ github.sha }}
+          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:${{ steps.ctx.outputs.sha_short }}
 
-          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:${{ github.sha }} wit-bindgen-wrpc --version
-          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:${{ steps.ctx.outputs.sha_short }} wit-bindgen-wrpc --version
+          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:${{ github.sha }} wit-bindgen-wrpc --version
+          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:${{ steps.ctx.outputs.sha_short }} wit-bindgen-wrpc --version
 
       - name: Push `wrpc` version tag
         if: startswith(github.ref, format('refs/tags/{0}v', matrix.prefix))
         continue-on-error: ${{ github.repository_owner != 'wrpc' }}
         run: |
-          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:${{ steps.ctx.outputs.version }}
-          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:${{ steps.ctx.outputs.version }} wit-bindgen-wrpc --version
+          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:${{ steps.ctx.outputs.version }}
+          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:${{ steps.ctx.outputs.version }} wit-bindgen-wrpc --version
 
       - name: Push `wrpc` `latest` tag
         if: startswith(github.ref, format('refs/tags/{0}v', matrix.prefix)) && !steps.ctx.outputs.prerelease
         continue-on-error: ${{ github.repository_owner != 'wrpc' }}
         run: |
-          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:latest
-          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wrpc:latest wit-bindgen-wrpc --version
+          buildah manifest push --all --format 'v2s2' wrpc docker://ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:latest
+          docker run --rm ghcr.io/${{ steps.ctx.outputs.owner }}/wit-bindgen-wrpc:latest wit-bindgen-wrpc --version
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -283,8 +271,8 @@ jobs:
         with:
           path: artifacts
       - run: |
-          for dir in ./artifacts/wrpc-*; do
-            target=${dir#./artifacts/wrpc-}
+          for dir in ./artifacts/wit-bindgen-wrpc-*; do
+            target=${dir#./artifacts/wit-bindgen-wrpc-}
             for bin_path in $(find ${dir}/bin -type f); do
               chmod +x ${bin_path}
               bin=$(basename ${bin_path})
@@ -310,29 +298,18 @@ jobs:
           generate_release_notes: true
           files: |
             ./wit-bindgen-wrpc/*
-            ./wrpc-keyvalue-nats/*
-            ./wrpc-wasmtime-nats/*
 
   crates:
     strategy:
       matrix:
         include:
-          - crate: interface-blobstore
+          - crate: wit-bindgen
             workspace-dependencies: true
 
-          - crate: interface-http
-            workspace-dependencies: true
+          - crate: wit-bindgen-rust
 
-          - crate: runtime-wasmtime
+          - crate: wit-bindgen-rust-macro
             workspace-dependencies: true
-
-          - crate: transport
-            workspace-dependencies: true
-
-          - crate: transport-nats
-            workspace-dependencies: true
-
-          - crate: types
 
     name: publish ${{ matrix.crate }} to crates.io
     needs: cargo

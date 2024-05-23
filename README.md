@@ -1,3 +1,3 @@
-# wRPC
+# wRPC wit-bindgen
 
-Extensible WIT-based RPC framework
+`wit-bindgen` for [wRPC](https://github.com/wrpc/wrpc)

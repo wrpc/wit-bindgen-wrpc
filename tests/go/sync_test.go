@@ -1,4 +1,4 @@
-//go:generate $WIT_BINDGEN_WRPC go --gofmt=false --world sync-client --out-dir bindings/sync_client --package github.com/wrpc/wrpc/tests/go/bindings/sync_client ../wit
+//go:generate $WIT_BINDGEN_WRPC go --gofmt=false --world sync-client --out-dir bindings/sync_client --package github.com/wrpc/wit-bindgen-wrpc/tests/go/bindings/sync_client ../wit
 
 package integration_test
 
@@ -12,11 +12,11 @@ import (
 	"github.com/nats-io/nats.go"
 	wrpc "github.com/wrpc/wrpc/go"
 	wrpcnats "github.com/wrpc/wrpc/go/nats"
-	integration "github.com/wrpc/wrpc/tests/go"
-	"github.com/wrpc/wrpc/tests/go/bindings/sync_client/foo"
-	"github.com/wrpc/wrpc/tests/go/bindings/sync_client/wrpc_test/integration/sync"
-	"github.com/wrpc/wrpc/tests/go/bindings/sync_server"
-	"github.com/wrpc/wrpc/tests/go/internal"
+	integration "github.com/wrpc/wit-bindgen-wrpc/tests/go"
+	"github.com/wrpc/wit-bindgen-wrpc/tests/go/bindings/sync_client/foo"
+	"github.com/wrpc/wit-bindgen-wrpc/tests/go/bindings/sync_client/wrpc_test/integration/sync"
+	"github.com/wrpc/wit-bindgen-wrpc/tests/go/bindings/sync_server"
+	"github.com/wrpc/wit-bindgen-wrpc/tests/go/internal"
 )
 
 func TestSync(t *testing.T) {

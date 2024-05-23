@@ -22,7 +22,6 @@
   inputs.nixify.url = "github:rvolosatovs/nixify";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
   inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  inputs.wasmcloud-component-adapters.url = "github:wasmcloud/wasmcloud-component-adapters";
   inputs.wit-deps.inputs.nixify.follows = "nixify";
   inputs.wit-deps.inputs.nixlib.follows = "nixlib";
   inputs.wit-deps.url = "github:bytecodealliance/wit-deps/v0.3.5";
@@ -31,7 +30,6 @@
     nixify,
     nixlib,
     nixpkgs-unstable,
-    wasmcloud-component-adapters,
     wit-deps,
     ...
   }:
@@ -40,6 +38,7 @@
     with nixify.lib;
       rust.mkFlake {
         src = ./.;
+        name = "wit-bindgen-wrpc";
 
         overlays = [
           wit-deps.overlays.default
@@ -108,9 +107,6 @@
               ++ optional darwin2darwin pkgs.xcbuild.xcrun;
           in
             {
-              WASI_PREVIEW1_COMMAND_COMPONENT_ADAPTER = wasmcloud-component-adapters.packages.${pkgs.stdenv.system}.wasi-preview1-command-component-adapter;
-              WASI_PREVIEW1_REACTOR_COMPONENT_ADAPTER = wasmcloud-component-adapters.packages.${pkgs.stdenv.system}.wasi-preview1-reactor-component-adapter;
-
               buildInputs =
                 buildInputs
                 ++ optional pkgs.stdenv.hostPlatform.isDarwin pkgs.libiconv;
@@ -189,30 +185,30 @@
               '';
             };
 
-          wrpc-aarch64-unknown-linux-gnu-fhs = mkFHS {
-            name = "wrpc-aarch64-unknown-linux-gnu-fhs";
-            src = packages.wrpc-aarch64-unknown-linux-gnu;
+          wit-bindgen-wrpc-aarch64-unknown-linux-gnu-fhs = mkFHS {
+            name = "wit-bindgen-wrpc-aarch64-unknown-linux-gnu-fhs";
+            src = packages.wit-bindgen-wrpc-aarch64-unknown-linux-gnu;
             interpreter = interpreters.aarch64-unknown-linux-gnu;
           };
 
-          wrpc-riscv64gc-unknown-linux-gnu-fhs = mkFHS {
-            name = "wrpc-riscv64gc-unknown-linux-gnu-fhs";
-            src = packages.wrpc-riscv64gc-unknown-linux-gnu;
+          wit-bindgen-wrpc-riscv64gc-unknown-linux-gnu-fhs = mkFHS {
+            name = "wit-bindgen-wrpc-riscv64gc-unknown-linux-gnu-fhs";
+            src = packages.wit-bindgen-wrpc-riscv64gc-unknown-linux-gnu;
             interpreter = interpreters.riscv64gc-unknown-linux-gnu;
           };
 
-          wrpc-x86_64-unknown-linux-gnu-fhs = mkFHS {
-            name = "wrpc-x86_64-unknown-linux-gnu-fhs";
-            src = packages.wrpc-x86_64-unknown-linux-gnu;
+          wit-bindgen-wrpc-x86_64-unknown-linux-gnu-fhs = mkFHS {
+            name = "wit-bindgen-wrpc-x86_64-unknown-linux-gnu-fhs";
+            src = packages.wit-bindgen-wrpc-x86_64-unknown-linux-gnu;
             interpreter = interpreters.x86_64-unknown-linux-gnu;
           };
         in
           packages
           // {
             inherit
-              wrpc-aarch64-unknown-linux-gnu-fhs
-              wrpc-riscv64gc-unknown-linux-gnu-fhs
-              wrpc-x86_64-unknown-linux-gnu-fhs
+              wit-bindgen-wrpc-aarch64-unknown-linux-gnu-fhs
+              wit-bindgen-wrpc-riscv64gc-unknown-linux-gnu-fhs
+              wit-bindgen-wrpc-x86_64-unknown-linux-gnu-fhs
               ;
 
             rust = hostRustToolchain;
